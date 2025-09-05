@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSpring, animated } from "react-spring";
 
 export default function Page() {
@@ -12,6 +12,69 @@ export default function Page() {
 	const [firstImg, setImg] = useState(true);
 
 
+	const handel_drag_start = (e: React.DragEvent<HTMLDivElement>) => {
+		changeDragging(true);
+		changeMouseInitPos(e.screenX);
+		e.dataTransfer.setDragImage(new Image(), 1000, 1000);
+	}
+
+	const handel_drag = (e: React.DragEvent<HTMLDivElement>) => {
+		let calculated_pos = (mouse_snap_pos + (e.screenX - mouse_init_pos)) % 360;
+
+
+		console.log(mouse_init_pos)
+		if (calculated_pos > 180) {
+			console.log("removed a rot")
+			calculated_pos -= 360;
+		}
+		else if (calculated_pos <= -180) {
+			console.log("added a rot")
+			calculated_pos += 360;
+		}
+
+
+		// console.log(calculated_pos);
+
+		changeAngle(calculated_pos);
+
+		// change Image face
+		// moved
+	}
+
+
+
+
+	const handel_exit_drag = () => {
+		changeDragging(false);
+		let new_pos;
+		if (Math.abs(Math.abs(angle) - Math.abs(mouse_snap_pos)) % 180 > 45) {
+			new_pos = (mouse_snap_pos + 180) % 360;
+		}
+		else {
+			new_pos = mouse_snap_pos;
+		}
+
+
+
+		let mid_point = (angle + 180) % 360;
+		if (mid_point < 0) {
+			mid_point += 360;
+		}
+
+		new_pos = new_pos < 0 ? new_pos + 360 : new_pos;
+		if (new_pos > mid_point) // go right
+		{
+			new_pos -= 360;
+		}
+
+		changeAngle(new_pos);
+		changeMouseSnapPos(new_pos);
+
+
+
+
+
+	}
 
 	const handel_start_touch = (e: React.TouchEvent<HTMLDivElement>) => {
 		changeDragging(true);
@@ -75,6 +138,7 @@ export default function Page() {
 
 	const props = useSpring({
 		transform: `rotateY(${angle}deg)`,
+		config: { duration: 500 },
 		immediate: dragging,
 		onChange:
 			(result) => {
@@ -82,6 +146,7 @@ export default function Page() {
 				const match = angle.match(/\d+/)
 				if (match) {
 					const a: number = match[0];
+					// console.log(Math.abs(a) % 180)
 
 					if (a % 180 != 0) {
 						if (Math.abs(a) % 180 > 90 && firstImg === true) {
@@ -96,26 +161,6 @@ export default function Page() {
 
 	});
 
-	/*
-		useEffect(() => {
-			const matches = props.transform.to(a => a);
-	
-			console.log(matches);
-			// if (matches) {
-			//
-			// 	const a: number = parseInt(matches[0]);
-			// 	console.log(a);
-			// 	if (a % 180 != 0) {
-			// 		if (Math.abs(a) % 180 > 90 && firstImg === true) {
-			// 			setImg(false);
-			// 		}
-			// 		else if (Math.abs(a) % 180 < 90 && firstImg === false) {
-			// 			setImg(true);
-			// 		}
-			// 	}
-			// }
-		}, [props]);
-	*/
 
 
 	return (
@@ -125,6 +170,9 @@ export default function Page() {
 				className="card"
 				// className={dragging ? "card" : "card released"}
 				draggable
+				onDrag={(e) => handel_drag(e)}
+				onDragStart={(e) => { handel_drag_start(e) }}
+				onDragEnd={handel_exit_drag}
 				onTouchMove={(e) => handel_touch(e)}
 				onTouchStart={(e) => { handel_start_touch(e) }}
 				onTouchEnd={handel_exit_touch}
