@@ -12,8 +12,8 @@
 }
 .card {
   background-color: lightgray;
-  height: clamp(360px, 70vh, 560px);
-  width: clamp(300px, 50vw, 560px);
+  height: min(70vh, 60vw);
+  width: min(40vh, 40vw, 560px);
   border-radius: 20px;
   box-shadow: 0px 7px 10px gray;
   position: relative;

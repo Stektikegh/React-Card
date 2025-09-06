@@ -19,26 +19,21 @@ export default function Page() {
 	}
 
 	const handel_drag = (e: React.DragEvent<HTMLDivElement>) => {
-		let calculated_pos = (mouse_snap_pos + (e.screenX - mouse_init_pos)) % 360;
+		if (e.screenX > 20) { // weird bug screenX = 5 for some reason
+			let calculated_pos = (mouse_snap_pos + (e.screenX - mouse_init_pos)) % 360;
 
 
-		console.log(mouse_init_pos)
-		if (calculated_pos > 180) {
-			console.log("removed a rot")
-			calculated_pos -= 360;
+			if (calculated_pos > 180) {
+				calculated_pos -= 360;
+			}
+			else if (calculated_pos <= -180) {
+				calculated_pos += 360;
+			}
+
+
+
+			changeAngle(calculated_pos);
 		}
-		else if (calculated_pos <= -180) {
-			console.log("added a rot")
-			calculated_pos += 360;
-		}
-
-
-		// console.log(calculated_pos);
-
-		changeAngle(calculated_pos);
-
-		// change Image face
-		// moved
 	}
 
 
@@ -146,7 +141,6 @@ export default function Page() {
 				const match = angle.match(/\d+/)
 				if (match) {
 					const a: number = match[0];
-					// console.log(Math.abs(a) % 180)
 
 					if (a % 180 != 0) {
 						if (Math.abs(a) % 180 > 90 && firstImg === true) {
