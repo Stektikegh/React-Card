@@ -8,7 +8,7 @@ export default function Page() {
 	const [mouse_snap_pos, changeMouseSnapPos] = useState(0);
 	const [dragging, changeDragging] = useState(false);
 
-	const Images = ["/public/static/images/thormeme.jpg", "/public/static/images/school_meme.png"];
+	const Images = ["/static/images/thormeme.jpg", "/static/images/school_meme.png"];
 	const [firstImg, setImg] = useState(true);
 
 
